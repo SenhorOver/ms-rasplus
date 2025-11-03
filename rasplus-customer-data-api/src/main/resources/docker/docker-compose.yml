@@ -1,0 +1,71 @@
+services:
+  mysql:
+    image: mysql
+    ports:
+      - "3306:3306"
+#    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: senha123
+      MYSQL_USER: over
+      MYSQL_PASSWORD: senha123
+    volumes:
+      - mysql_data_container:/var/lib/mysql
+      - ../../../../initdb:/docker-entrypoint-initdb.d # scripts sql docker
+    networks:
+      - keycloak_network
+
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_container:/data
+
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    ports:
+      - "8080:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+
+      KC_DB: mysql
+      KC_DB_VENDOR: mysql
+      KC_DB_URL: jdbc:mysql://mysql:3306/KEYCLOAK
+      KC_DB_USERNAME: over
+      KC_DB_PASSWORD: senha123
+      KC_HOSTNAME: localhost
+      KC_HTTP_PORT: 8080
+    command:
+      - start-dev
+      - --http-port=8080
+    depends_on:
+      - mysql
+    volumes:
+      - keycloak_data_container:/opt/keycloak
+    networks:
+      - keycloak_network
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq_container
+    ports:
+      - "5672:5672" # Porta (AMQP)
+      - "15672:15672" # Porta (UI)
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+networks:
+  keycloak_network:
+    driver: bridge
+
+volumes:
+  mysql_data_container:
+  redis_data_container:
+  keycloak_data_container:
+  rabbitmq_data:
