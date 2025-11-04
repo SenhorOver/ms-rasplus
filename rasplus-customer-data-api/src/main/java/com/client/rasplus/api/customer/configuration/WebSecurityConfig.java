@@ -33,6 +33,14 @@ public class WebSecurityConfig {
             "/swagger-resources/**"
     };
 
+    private static final String[] AUTH_ACTUATOR_LIST = {
+            "/actuator",
+            "/actuator/info",
+            "/actuator/health",
+            "/actuator/metrics"
+
+    };
+
     @Value("${keycloak.auth-server-uri}")
     private String keycloakUri;
 
@@ -41,6 +49,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(authorize -> {
                             authorize.requestMatchers(AUTH_SWAGGER_LIST).permitAll();
+                            authorize.requestMatchers(AUTH_ACTUATOR_LIST).permitAll();
                             authorize.requestMatchers(HttpMethod.POST, "/v1/auth").permitAll();
                             authorize.requestMatchers("/v1/auth/**").hasAnyAuthority("CLIENT_READ_WRITE", "ADMIN_READ", "ADMIN_WRITE");
                             authorize.anyRequest().hasAnyAuthority("ADMIN_READ", "ADMIN_WRITE");
