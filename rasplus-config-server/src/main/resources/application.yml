@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: rasplus-config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/SenhorOver/rasplus-config-server-repo
+          search-paths:
+            - 'customer*'
+          default-label: main
+server:
+  port: 8888
