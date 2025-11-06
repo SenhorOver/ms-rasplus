@@ -8,6 +8,7 @@ spring:
           uri: https://github.com/SenhorOver/rasplus-config-server-repo
           search-paths:
             - 'customer*'
+            - 'message*'
           default-label: main
 server:
   port: 8888
